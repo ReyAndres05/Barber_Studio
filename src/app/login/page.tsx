@@ -31,8 +31,8 @@ export default function LoginPage() {
       // Importaremos getSession dinámicamente o de next-auth/react
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
-      
-      if (session?.user?.needsPasswordChange) {
+
+      if (session?.user?.needspasswordchange) {
         router.push("/admin/change-password");
       } else if (session?.user?.role === "admin") {
         router.push("/admin/dashboard");
@@ -45,7 +45,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-matte-black text-white relative overflow-hidden">
-      
+
       <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gold-500/10 via-matte-black to-charcoal/90 z-0 pointer-events-none" />
 
       <div className="z-10 w-full max-w-md p-8 bg-charcoal border border-gray-800 rounded-2xl shadow-2xl animate-fade-in">
