@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat, Poppins } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/context/AppContext";
+import { AuthProvider } from "@/components/AuthProvider";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -35,9 +36,11 @@ export default function RootLayout({
       className={`${montserrat.variable} ${poppins.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-matte-black text-white selection:bg-gold-500 selection:text-black">
-        <AppProvider>
-          {children}
-        </AppProvider>
+        <AuthProvider>
+          <AppProvider>
+            {children}
+          </AppProvider>
+        </AuthProvider>
       </body>
     </html>
   );

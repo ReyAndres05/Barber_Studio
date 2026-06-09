@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?       @unique
+  password      String?
+  phone         String?
+  address       String?
+  role          String        @default("cliente") // 'cliente' | 'admin'
+  image         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  reservations  Reservation[]
+  comments      Comment[]
+}
+
+model Service {
+  id          String        @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  duration    Int           // in minutes
+  category    String
+  reservations Reservation[]
+}
+
+model Barber {
+  id            String        @id @default(cuid())
+  name          String
+  role          String
+  rating        Float         @default(5.0)
+  reviewsCount  Int           @default(0)
+  bio           String
+  image         String
+  status        String        @default("active")
+  availableDays String        // comma separated numbers
+  reservations  Reservation[]
+}
+
+model Reservation {
+  id            String   @id @default(cuid())
+  userId        String
+  serviceId     String
+  barberId      String
+  date          String   // YYYY-MM-DD
+  time          String   // HH:MM
+  price         Float
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  barber        Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id            String   @id @default(cuid())
+  userId        String
+  comment       String
+  rating        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useApp } from "@/context/AppContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useSession } from "next-auth/react";
 import { 
   Scissors, 
   MapPin, 
@@ -19,13 +19,67 @@ import {
   Send 
 } from "lucide-react";
 
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  duration: number;
+  category: string;
+}
+
+interface Barber {
+  id: string;
+  name: string;
+  role: string;
+  rating: number;
+  bio: string;
+  image: string;
+  status: string;
+}
+
+interface DBComment {
+  id: string;
+  comment: string;
+  rating: number;
+  createdAt: string;
+  user: { name: string; image: string | null };
+}
+
 export default function Home() {
-  const { services, barbers } = useApp();
+  const { data: session } = useSession();
+  const [services, setServices] = useState<Service[]>([]);
+  const [barbers, setBarbers] = useState<Barber[]>([]);
+  const [dbComments, setDbComments] = useState<DBComment[]>([]);
   
   // Contact Form State
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
+
+  // Comment Form State
+  const [commentText, setCommentText] = useState("");
+  const [commentRating, setCommentRating] = useState(5);
+  const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [commentSuccess, setCommentSuccess] = useState(false);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [sRes, bRes, cRes] = await Promise.all([
+          fetch("/api/services"),
+          fetch("/api/barbers"),
+          fetch("/api/comments"),
+        ]);
+        setServices(await sRes.json());
+        setBarbers(await bRes.json());
+        setDbComments(await cRes.json());
+      } catch (e) {
+        console.error("Error fetching homepage data", e);
+      }
+    }
+    fetchData();
+  }, []);
 
   // Gallery Categories
   const galleryImages = [
@@ -37,27 +91,37 @@ export default function Home() {
     { url: "https://images.unsplash.com/photo-1593702295094-aec22597af65?auto=format&fit=crop&w=500&q=80", title: "Tratamiento con Toallas Calientes" }
   ];
 
-  // Testimonials list
-  const testimonials = [
-    {
-      name: "Juan Sebastián Ortiz",
-      role: "Cliente Regular",
-      text: "La mejor experiencia de barbería que he tenido. El nivel de detalle de Alexander es impecable, y el ambiente con whisky de cortesía y toallas calientes te hace sentir en un club exclusivo.",
-      rating: 5,
-    },
-    {
-      name: "Felipe Restrepo",
-      role: "Emprendedor",
-      text: "Mateo siempre logra el corte moderno perfecto. El sistema de reservas en línea es sumamente ágil y el servicio al cliente es de primer nivel. Altamente recomendado.",
-      rating: 5,
-    },
-    {
-      name: "Andrés Delgado",
-      role: "Consultor de Negocios",
-      text: "Marcus tiene una precisión insuperable delineando barbas. Llevo más de un año viniendo a Barber Studio y mantengo mi estilo impecable gracias a su dedicación.",
-      rating: 5,
-    },
+  // Fallback testimonials (shown when there are no DB comments)
+  const fallbackTestimonials = [
+    { name: "Juan Sebastián Ortiz", role: "Cliente Regular", text: "La mejor experiencia de barbería que he tenido. El nivel de detalle de Alexander es impecable, y el ambiente con whisky de cortesía y toallas calientes te hace sentir en un club exclusivo.", rating: 5 },
+    { name: "Felipe Restrepo", role: "Emprendedor", text: "Mateo siempre logra el corte moderno perfecto. El sistema de reservas en línea es sumamente ágil y el servicio al cliente es de primer nivel. Altamente recomendado.", rating: 5 },
+    { name: "Andrés Delgado", role: "Consultor de Negocios", text: "Marcus tiene una precisión insuperable delineando barbas. Llevo más de un año viniendo a Barber Studio y mantengo mi estilo impecable gracias a su dedicación.", rating: 5 },
   ];
+
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+    setIsSubmittingComment(true);
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment: commentText, rating: commentRating }),
+      });
+      if (res.ok) {
+        const newComment = await res.json();
+        setDbComments((prev) => [newComment, ...prev]);
+        setCommentText("");
+        setCommentRating(5);
+        setCommentSuccess(true);
+        setTimeout(() => setCommentSuccess(false), 4000);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSubmittingComment(false);
+    }
+  };
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -338,34 +402,124 @@ export default function Home() {
             <div className="h-1 w-20 bg-gold-500 mx-auto mb-6" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((test, idx) => (
-              <div 
-                key={idx}
-                className="bg-charcoal border border-gray-800 rounded-xl p-8 flex flex-col justify-between hover:border-gold-500/20 transition-all duration-300"
-              >
-                <div className="space-y-4">
-                  <div className="flex space-x-1 text-gold-500">
-                    {[...Array(test.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current" />
+          {/* Real DB Comments */}
+          {dbComments.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {dbComments.slice(0, 6).map((com) => (
+                <div
+                  key={com.id}
+                  className="bg-charcoal border border-gray-800 rounded-xl p-8 flex flex-col justify-between hover:border-gold-500/20 transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="flex space-x-1 text-gold-500">
+                      {[...Array(com.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-gray-300 text-sm italic leading-relaxed font-light">
+                      &ldquo;{com.comment}&rdquo;
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 pt-6 border-t border-gray-850 mt-6">
+                    <div className="h-10 w-10 rounded-full bg-gold-500/10 flex items-center justify-center font-heading font-bold text-gold-500 text-sm border border-gold-500/25">
+                      {com.user?.name?.[0] || "?"}
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold text-sm">{com.user?.name || "Anónimo"}</h4>
+                      <p className="text-gray-500 text-xs">{new Date(com.createdAt).toLocaleDateString("es-ES")}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {fallbackTestimonials.map((test, idx) => (
+                <div
+                  key={idx}
+                  className="bg-charcoal border border-gray-800 rounded-xl p-8 flex flex-col justify-between hover:border-gold-500/20 transition-all duration-300"
+                >
+                  <div className="space-y-4">
+                    <div className="flex space-x-1 text-gold-500">
+                      {[...Array(test.rating)].map((_, i) => (
+                        <Star key={i} className="h-4 w-4 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-gray-300 text-sm italic leading-relaxed font-light">
+                      &ldquo;{test.text}&rdquo;
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 pt-6 border-t border-gray-850 mt-6">
+                    <div className="h-10 w-10 rounded-full bg-gold-500/10 flex items-center justify-center font-heading font-bold text-gold-500 text-sm border border-gold-500/25">
+                      {test.name[0]}
+                    </div>
+                    <div>
+                      <h4 className="text-white font-semibold text-sm">{test.name}</h4>
+                      <p className="text-gray-500 text-xs">{test.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Comment Form — solo para usuarios autenticados */}
+          {session?.user ? (
+            <div className="max-w-2xl mx-auto bg-charcoal border border-gray-800 rounded-2xl p-8">
+              <h3 className="font-heading text-xl font-bold text-white mb-2">Deja tu Opinión</h3>
+              <p className="text-gray-400 text-sm font-light mb-6">Comparte tu experiencia en Barber Studio, {session.user.name?.split(" ")[0]}.</p>
+              
+              {commentSuccess && (
+                <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-lg text-sm mb-4 flex items-center space-x-2">
+                  <CheckCircle className="w-4 h-4" />
+                  <span>¡Comentario publicado exitosamente!</span>
+                </div>
+              )}
+
+              <form onSubmit={handleCommentSubmit} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase text-gray-400 font-semibold tracking-wider">Calificación</label>
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((val) => (
+                      <button
+                        key={val}
+                        type="button"
+                        onClick={() => setCommentRating(val)}
+                        className="cursor-pointer transition-transform hover:scale-110"
+                      >
+                        <Star className={`h-7 w-7 ${val <= commentRating ? "text-gold-500 fill-gold-500" : "text-gray-600"}`} />
+                      </button>
                     ))}
                   </div>
-                  <p className="text-gray-300 text-sm italic leading-relaxed font-light">
-                    "{test.text}"
-                  </p>
                 </div>
-                <div className="flex items-center space-x-3 pt-6 border-t border-gray-850 mt-6">
-                  <div className="h-10 w-10 rounded-full bg-gold-500/10 flex items-center justify-center font-heading font-bold text-gold-500 text-sm border border-gold-500/25">
-                    {test.name[0]}
-                  </div>
-                  <div>
-                    <h4 className="text-white font-semibold text-sm">{test.name}</h4>
-                    <p className="text-gray-500 text-xs">{test.role}</p>
-                  </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase text-gray-400 font-semibold tracking-wider">Tu Comentario</label>
+                  <textarea
+                    required
+                    rows={3}
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="w-full bg-matte-black border border-gray-800 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-gold-500/50 transition-all font-light resize-none"
+                    placeholder="Cuéntanos sobre tu experiencia..."
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingComment}
+                  className="bg-gradient-to-r from-gold-600 to-gold-400 hover:from-gold-500 text-black font-semibold py-3 px-8 rounded-lg shadow-lg transition-all text-sm uppercase tracking-wider disabled:opacity-50 flex items-center space-x-2 cursor-pointer"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>{isSubmittingComment ? "Enviando..." : "Publicar Comentario"}</span>
+                </button>
+              </form>
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-500 text-sm">Inicia sesión para dejar tu comentario.</p>
+            </div>
+          )}
         </div>
       </section>
 

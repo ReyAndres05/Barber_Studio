@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Scissors, Menu, X, User, ShieldAlert, Calendar } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -49,24 +51,44 @@ export default function Navbar() {
 
           {/* Dashboards & CTA Links */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/dashboard/cliente"
-              title="Mi Panel de Cliente"
-              className={`p-2 rounded-lg border text-gray-300 hover:text-gold-500 hover:border-gold-500/30 transition-all ${
-                pathname === "/dashboard/cliente" ? "border-gold-500 text-gold-500" : "border-gray-800"
-              }`}
-            >
-              <User className="h-5 w-5" />
-            </Link>
-            <Link
-              href="/dashboard/admin"
-              title="Panel Administrativo"
-              className={`p-2 rounded-lg border text-gray-300 hover:text-gold-500 hover:border-gold-500/30 transition-all ${
-                pathname === "/dashboard/admin" ? "border-gold-500 text-gold-500" : "border-gray-800"
-              }`}
-            >
-              <ShieldAlert className="h-5 w-5" />
-            </Link>
+            {status === "authenticated" ? (
+              <>
+                <Link
+                  href="/profile"
+                  title="Mi Perfil"
+                  className={`p-2 rounded-lg border text-gray-300 hover:text-gold-500 hover:border-gold-500/30 transition-all ${
+                    pathname.startsWith("/profile") ? "border-gold-500 text-gold-500" : "border-gray-800"
+                  }`}
+                >
+                  <User className="h-5 w-5" />
+                </Link>
+                {session.user.role === "admin" && (
+                  <Link
+                    href="/admin/dashboard"
+                    title="Panel Administrativo"
+                    className={`p-2 rounded-lg border text-gray-300 hover:text-gold-500 hover:border-gold-500/30 transition-all ${
+                      pathname.startsWith("/admin") ? "border-gold-500 text-gold-500" : "border-gray-800"
+                    }`}
+                  >
+                    <ShieldAlert className="h-5 w-5" />
+                  </Link>
+                )}
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="text-sm font-medium text-gray-300 hover:text-red-500 transition-colors"
+                >
+                  Salir
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => signIn()}
+                className="text-sm font-medium text-gray-300 hover:text-gold-500 transition-colors"
+              >
+                Ingresar
+              </button>
+            )}
+            
             <Link
               href="/reservar"
               className="flex items-center space-x-2 bg-gradient-to-r from-gold-600 to-gold-400 hover:from-gold-500 hover:to-gold-300 text-black font-semibold px-5 py-2.5 rounded-lg shadow-lg hover:shadow-gold-500/20 transition-all duration-300 text-sm"
@@ -108,22 +130,41 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="border-t border-gray-800/60 my-4 pt-4 flex flex-col space-y-3">
-            <Link
-              href="/dashboard/cliente"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-gold-500 hover:bg-gold-500/5"
-            >
-              <User className="h-5 w-5 text-gold-500" />
-              <span>Mi Panel de Cliente</span>
-            </Link>
-            <Link
-              href="/dashboard/admin"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-gold-500 hover:bg-gold-500/5"
-            >
-              <ShieldAlert className="h-5 w-5 text-gold-500" />
-              <span>Panel Administrativo</span>
-            </Link>
+            {status === "authenticated" ? (
+              <>
+                <Link
+                  href="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-gold-500 hover:bg-gold-500/5"
+                >
+                  <User className="h-5 w-5 text-gold-500" />
+                  <span>Mi Perfil</span>
+                </Link>
+                {session.user.role === "admin" && (
+                  <Link
+                    href="/admin/dashboard"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-gold-500 hover:bg-gold-500/5"
+                  >
+                    <ShieldAlert className="h-5 w-5 text-gold-500" />
+                    <span>Panel Administrativo</span>
+                  </Link>
+                )}
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-red-400 hover:text-red-300 hover:bg-red-500/5 text-left"
+                >
+                  <span>Cerrar Sesión</span>
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => signIn()}
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium text-gray-300 hover:text-gold-500 hover:bg-gold-500/5 text-left"
+              >
+                <span>Ingresar</span>
+              </button>
+            )}
           </div>
         </div>
       )}
