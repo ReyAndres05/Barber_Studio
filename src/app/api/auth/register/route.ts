@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     // Validación de correo único
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email },
     });
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear el usuario con rol por defecto "cliente"
-    const newUser = await prisma.user.create({
+    const newUser = await prisma.users.create({
       data: {
         name,
         email,

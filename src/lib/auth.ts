@@ -18,13 +18,13 @@ export const authOptions: NextAuthOptions = {
 
         // Auto-creación del admin si no existe
         const adminEmail = "admin@barberstudio.com";
-        const adminExists = await prisma.user.findUnique({
+        const adminExists = await prisma.users.findUnique({
           where: { email: adminEmail },
         });
 
         if (!adminExists) {
           const defaultAdminPassword = await bcrypt.hash("Admin123*", 10);
-          await prisma.user.create({
+          await prisma.users.create({
             data: {
               name: "Administrador Principal",
               email: adminEmail,
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           });
         }
 
-        const user = await prisma.user.findUnique({
+        const user = await prisma.users.findUnique({
           where: { email: credentials.email },
         });
 
@@ -70,7 +70,7 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
         token.needsPasswordChange = user.needsPasswordChange;
       } else if (token?.id) {
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = await prisma.users.findUnique({
           where: { id: token.id as string },
           select: { needsPasswordChange: true },
         });

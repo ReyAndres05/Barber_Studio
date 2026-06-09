@@ -7,8 +7,8 @@ async function main() {
   // Check if admin exists, if so update/recreate it with needsPasswordChange: true and Admin123*
   const adminEmail = 'admin@barberstudio.com'
   const hashedPassword = await bcrypt.hash('Admin123*', 10)
-  
-  await prisma.user.upsert({
+
+  await prisma.users.upsert({
     where: { email: adminEmail },
     update: {
       name: 'Administrador Principal',

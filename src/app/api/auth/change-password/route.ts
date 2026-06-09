@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     // Actualizar el usuario
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: session.user.id },
       data: {
         password: hashedPassword,
