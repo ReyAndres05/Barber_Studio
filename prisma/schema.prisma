@@ -3,73 +3,76 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  password      String?
-  phone         String?
-  address       String?
-  role          String        @default("cliente") // 'cliente' | 'admin'
-  image         String?
-  needsPasswordChange Boolean   @default(false)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  reservations  Reservation[]
-  comments      Comment[]
-}
-
-model Service {
-  id          String        @id @default(cuid())
-  name        String
-  description String
-  price       Float
-  duration    Int           // in minutes
-  category    String
-  reservations Reservation[]
-}
-
-model Barber {
-  id            String        @id @default(cuid())
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model barbers {
+  id            String         @id
   name          String
   role          String
-  rating        Float         @default(5.0)
-  reviewsCount  Int           @default(0)
+  rating        Float          @default(5.0) @db.Real
+  reviewscount  Int            @default(0)
   bio           String
   image         String
-  status        String        @default("active")
-  availableDays String        // comma separated numbers
-  reservations  Reservation[]
+  status        String         @default("active")
+  availabledays String
+  reservations  reservations[]
 }
 
-model Reservation {
-  id            String   @id @default(cuid())
-  userId        String
-  serviceId     String
-  barberId      String
-  date          String   // YYYY-MM-DD
-  time          String   // HH:MM
-  price         Float
-  status        String   @default("pending")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  service       Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  barber        Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model comments {
+  id        String   @id
+  userid    String
+  comment   String
+  rating    Int
+  createdat DateTime @default(now()) @db.Timestamptz(6)
+  updatedat DateTime @default(now()) @db.Timestamptz(6)
+  users     users    @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
 
-model Comment {
-  id            String   @id @default(cuid())
-  userId        String
-  comment       String
-  rating        Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model reservations {
+  id        String   @id
+  userid    String
+  serviceid String
+  barberid  String
+  date      DateTime @db.Date
+  time      DateTime @db.Time(6)
+  price     Float    @db.Real
+  status    String   @default("pending")
+  createdat DateTime @default(now()) @db.Timestamptz(6)
+  updatedat DateTime @default(now()) @db.Timestamptz(6)
+  barbers   barbers  @relation(fields: [barberid], references: [id], onDelete: Cascade)
+  services  services @relation(fields: [serviceid], references: [id], onDelete: Cascade)
+  users     users    @relation(fields: [userid], references: [id], onDelete: Cascade)
+}
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model services {
+  id           String         @id
+  name         String
+  description  String
+  price        Float          @db.Real
+  duration     Int
+  category     String
+  reservations reservations[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id                  String         @id
+  name                String?
+  email               String?        @unique
+  password            String?
+  phone               String?
+  address             String?
+  role                String         @default("cliente")
+  image               String?
+  needspasswordchange Boolean        @default(false)
+  createdat           DateTime       @default(now()) @db.Timestamptz(6)
+  updatedat           DateTime       @default(now()) @db.Timestamptz(6)
+  comments            comments[]
+  reservations        reservations[]
 }
