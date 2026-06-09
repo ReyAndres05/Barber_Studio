@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
-export async function GET(request: Request) {
-  const session = await getServerSession();
+export async function GET() {
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
-  // Si es admin, puede ver todas (opcional, dependiendo del panel admin)
-  // Si es cliente, solo las suyas
+  // Si es admin, puede ver todas. Si es cliente, solo las suyas.
   const role = session.user.role;
   let reservations;
 
@@ -31,7 +31,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -62,6 +62,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newReservation, { status: 201 });
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Error al crear la reserva" },
       { status: 500 }

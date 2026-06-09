@@ -6,6 +6,7 @@ import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSession } from "next-auth/react";
+import { formatPrice } from "@/lib/utils";
 import { 
   Scissors, 
   MapPin, 
@@ -84,11 +85,11 @@ export default function Home() {
   // Gallery Categories
   const galleryImages = [
     { url: "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=500&q=80", title: "Corte Degradado Fino" },
-    { url: "https://images.unsplash.com/photo-1605497746444-ac9dbd39f69c?auto=format&fit=crop&w=500&q=80", title: "Estilo Pompadour de Lujo" },
+    { url: "https://images.unsplash.com/photo-1598257006458-087169a1f08d?auto=format&fit=crop&w=500&q=80", title: "Estilo Pompadour de Lujo" },
     { url: "https://images.unsplash.com/photo-1512864084360-7c0c4d0a0845?auto=format&fit=crop&w=500&q=80", title: "Afeitado y Delineado Clásico" },
     { url: "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=500&q=80", title: "Diseño de Barba Angular" },
     { url: "https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=500&q=80", title: "Peinado Texturizado Moderno" },
-    { url: "https://images.unsplash.com/photo-1593702295094-aec22597af65?auto=format&fit=crop&w=500&q=80", title: "Tratamiento con Toallas Calientes" }
+    { url: "https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=500&q=80", title: "Tratamiento con Toallas Calientes" }
   ];
 
   // Fallback testimonials (shown when there are no DB comments)
@@ -218,7 +219,7 @@ export default function Home() {
                       <Scissors className="h-6 w-6 text-gold-500" />
                     </span>
                     <span className="text-gold-500 font-heading text-2xl font-bold">
-                      ${service.price}
+                      {formatPrice(service.price)}
                     </span>
                   </div>
                   <h3 className="font-heading text-lg font-bold text-white mb-2 group-hover:text-gold-500 transition-colors">

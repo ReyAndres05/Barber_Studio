@@ -28,7 +28,17 @@ export default function LoginPage() {
       setError(res.error);
       setLoading(false);
     } else {
-      router.push("/profile");
+      // Importaremos getSession dinámicamente o de next-auth/react
+      const { getSession } = await import("next-auth/react");
+      const session = await getSession();
+      
+      if (session?.user?.needsPasswordChange) {
+        router.push("/admin/change-password");
+      } else if (session?.user?.role === "admin") {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/profile");
+      }
       router.refresh();
     }
   };
@@ -95,7 +105,10 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-gray-500 flex flex-col space-y-3">
+          <Link href="/register" className="hover:text-gold-500 transition-colors font-medium">
+            ¿No tienes cuenta? Crear cuenta
+          </Link>
           <Link href="/" className="hover:text-gold-500 transition-colors">
             Volver al inicio
           </Link>

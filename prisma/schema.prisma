@@ -16,6 +16,7 @@ model User {
   address       String?
   role          String        @default("cliente") // 'cliente' | 'admin'
   image         String?
+  needsPasswordChange Boolean   @default(false)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
   reservations  Reservation[]

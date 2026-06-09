@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSession } from "next-auth/react";
+import { formatPrice } from "@/lib/utils";
 import {
   Scissors,
   User,
@@ -266,7 +267,7 @@ function BookingWizardContent() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-gold-500 font-heading text-xl font-bold">${service.price}</span>
+                    <span className="text-gold-500 font-heading text-xl font-bold">{formatPrice(service.price)}</span>
                   </div>
                 </div>
               ))}
@@ -376,7 +377,7 @@ function BookingWizardContent() {
               </div>
               <div className="flex justify-between items-center pt-2">
                 <span className="text-gray-500 text-sm uppercase font-bold">Precio Total</span>
-                <span className="text-gold-500 font-heading text-2xl font-bold">${selectedService?.price}</span>
+                <span className="text-gold-500 font-heading text-2xl font-bold">{formatPrice(selectedService?.price ?? 0)}</span>
               </div>
             </div>
 

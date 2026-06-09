@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { formatPrice } from "@/lib/utils";
 import {
   BarChart3,
   Calendar,
@@ -202,7 +203,7 @@ export default function AdminDashboard() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { name: "Ingresos Totales", value: `$${totalRevenue}`, desc: "Citas completadas", icon: DollarSign, color: "text-green-400" },
+                  { name: "Ingresos Totales", value: formatPrice(totalRevenue), desc: "Citas completadas", icon: DollarSign, color: "text-green-400" },
                   { name: "Citas Pendientes", value: pendingBookings, desc: "Por atender", icon: Calendar, color: "text-blue-400" },
                   { name: "Citas Completadas", value: completedBookings, desc: "Finalizadas", icon: CheckCircle, color: "text-gold-500" },
                   { name: "Rating Promedio", value: avgRating, desc: `${comments.length} comentarios`, icon: Star, color: "text-purple-400" },
@@ -301,7 +302,7 @@ export default function AdminDashboard() {
                               <p>{formatDate(apt.date)}</p>
                               <p className="text-[10px] text-gray-500 font-semibold mt-0.5">{apt.time} hs</p>
                             </td>
-                            <td className="py-4 px-6 text-gold-500 font-semibold">${apt.price}</td>
+                            <td className="py-4 px-6 text-gold-500 font-semibold">{formatPrice(apt.price)}</td>
                             <td className="py-4 px-6">
                               <span
                                 className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${

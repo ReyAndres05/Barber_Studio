@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { User, Calendar, MessageSquare, LogOut, Settings, Star } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { formatPrice } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -115,8 +116,18 @@ export default function ProfilePage() {
                         <p className="text-gray-500 text-xs mt-1 flex items-center"><Calendar className="w-3 h-3 mr-1"/> {res.date} a las {res.time}</p>
                       </div>
                       <div className="text-right">
-                        <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-md ${res.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' : 'bg-green-500/10 text-green-500'}`}>{res.status}</span>
-                        <p className="text-gold-500 font-bold mt-2">${res.price}</p>
+                        <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded-md ${
+                          res.status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' :
+                          res.status === 'completed' ? 'bg-green-500/10 text-green-500' :
+                          res.status === 'cancelled' ? 'bg-red-500/10 text-red-400' :
+                          'bg-blue-500/10 text-blue-400'
+                        }`}>
+                          {res.status === 'pending' && 'Pendiente'}
+                          {res.status === 'completed' && 'Completado'}
+                          {res.status === 'cancelled' && 'Cancelado'}
+                          {res.status === 'confirmed' && 'Confirmado'}
+                        </span>
+                        <p className="text-gold-500 font-bold mt-2">{formatPrice(res.price)}</p>
                       </div>
                     </div>
                   ))
