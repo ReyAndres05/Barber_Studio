@@ -29,8 +29,8 @@ async function main() {
   console.log('Admin user seeded: admin@barberstudio.com / Admin123*')
 
   // Re-seed Services with COP prices (first clean them to ensure updated prices)
-  await prisma.service.deleteMany()
-  await prisma.service.createMany({
+  await prisma.services.deleteMany()
+  await prisma.services.createMany({
     data: [
       {
         name: "Corte de Pelo Imperial",

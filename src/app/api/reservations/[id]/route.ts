@@ -37,7 +37,7 @@ export async function PATCH(
       );
     }
 
-    const updated = await prisma.reservation.update({
+    const updated = await prisma.reservations.update({
       where: { id },
       data: { status },
     });

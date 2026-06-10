@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  const services = await prisma.service.findMany();
+  const services = await prisma.services.findMany();
   console.log('Services in DB:', services);
   const barbers = await prisma.barbers.findMany();
   console.log('Barbers in DB:', barbers);
