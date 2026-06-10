@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const barbers = await prisma.barber.findMany();
+    const barbers = await prisma.barbers.findMany();
     return NextResponse.json(barbers);
   } catch (error) {
     return NextResponse.json(

@@ -73,9 +73,9 @@ async function main() {
 
 
   // Create Barbers
-  const barbersCount = await prisma.barber.count()
+  const barbersCount = await prisma.barbers.count()
   if (barbersCount === 0) {
-    await prisma.barber.createMany({
+    await prisma.barbers.createMany({
       data: [
         {
           name: "Alexander Pierce",
