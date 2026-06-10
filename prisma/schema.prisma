@@ -70,7 +70,7 @@ model users {
   address             String?
   role                String   @default("cliente")
   image               String?
-  needsPasswordChange Boolean  @default(false) @map("needspasswordchange")
+  needsPasswordChange Boolean  @default(false)
   createdAt           DateTime @default(now()) @map("createdat")
   updatedAt           DateTime @default(now()) @map("updatedat")
 
