@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { Scissors, ShieldAlert, CheckCircle } from "lucide-react";
-import Link from "next/link";
 
 export default function AdminChangePasswordPage() {
   const { data: session, status } = useSession();
