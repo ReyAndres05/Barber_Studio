@@ -36,10 +36,10 @@ model comments {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reservations {
-  id        String   @id
-  userid    String
-  serviceid String
-  barberid  String
+  id        String   @id @default(uuid())
+  userId    String @map("userid")
+  serviceId String @map("serviceid")
+  barberId  String @map("barberid")
   date      DateTime @db.Date
   time      DateTime @db.Time(6)
   price     Float    @db.Real

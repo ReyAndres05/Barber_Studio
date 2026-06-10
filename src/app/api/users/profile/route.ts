@@ -15,11 +15,11 @@ export async function GET() {
       where: { id: session.user.id },
       include: {
         reservations: {
-          include: { service: true, barber: true },
-          orderBy: { createdAt: "desc" },
+          include: { services: true, barbers: true },
+          orderBy: { createdat: "desc" },
         },
         comments: {
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdat: "desc" },
         },
       },
     });

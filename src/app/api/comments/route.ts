@@ -7,11 +7,11 @@ import { sendCommentNotification } from "@/lib/mailer";
 export async function GET() {
   const comments = await prisma.comments.findMany({
     include: {
-      user: {
+      users: {
         select: { name: true, image: true },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdat: "desc" },
   });
 
   return NextResponse.json(comments);
@@ -37,12 +37,13 @@ export async function POST(request: Request) {
 
     const newComment = await prisma.comments.create({
       data: {
-        userId: session.user.id,
+        id: crypto.randomUUID(),
+        users: { connect: { id: session.user.id } },
         comment,
         rating,
       },
       include: {
-        user: {
+        users: {
           select: { name: true, email: true, image: true },
         },
       },
@@ -50,8 +51,8 @@ export async function POST(request: Request) {
 
     // Enviar correo asíncronamente
     sendCommentNotification(
-      newComment.user?.name || "Cliente Anónimo",
-      newComment.user?.email || "Sin correo",
+      newComment.users?.name || "Cliente Anónimo",
+      newComment.users?.email || "Sin correo",
       rating,
       comment
     ).catch((e) => console.error("Fallo al enviar correo", e));

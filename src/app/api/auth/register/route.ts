@@ -49,12 +49,13 @@ export async function POST(request: Request) {
     // Crear el usuario con rol por defecto "cliente"
     const newUser = await prisma.users.create({
       data: {
+        id: crypto.randomUUID(),
         name,
         email,
         phone,
         password: hashedPassword,
         role: "cliente",
-        needsPasswordChange: false,
+        needspasswordchange: false,
       },
     });
 

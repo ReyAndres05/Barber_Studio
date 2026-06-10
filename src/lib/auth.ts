@@ -26,12 +26,13 @@ export const authOptions: NextAuthOptions = {
           const defaultAdminPassword = await bcrypt.hash("Admin123*", 10);
           await prisma.users.create({
             data: {
+              id: crypto.randomUUID(),
               name: "Administrador Principal",
               email: adminEmail,
               password: defaultAdminPassword,
               role: "admin",
               phone: "1234567890",
-              needsPasswordChange: true,
+              needspasswordchange: true,
             },
           });
         }
@@ -58,7 +59,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          needsPasswordChange: user.needsPasswordChange,
+          needsPasswordChange: user.needspasswordchange,
         };
       },
     }),
@@ -72,10 +73,10 @@ export const authOptions: NextAuthOptions = {
       } else if (token?.id) {
         const dbUser = await prisma.users.findUnique({
           where: { id: token.id as string },
-          select: { needsPasswordChange: true },
+          select: { needspasswordchange: true },
         });
         if (dbUser) {
-          token.needsPasswordChange = dbUser.needsPasswordChange;
+          token.needsPasswordChange = dbUser.needspasswordchange;
         }
       }
       return token;

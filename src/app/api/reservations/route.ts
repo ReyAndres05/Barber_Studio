@@ -16,14 +16,14 @@ export async function GET() {
 
   if (role === "admin") {
     reservations = await prisma.reservations.findMany({
-      include: { user: true, service: true, barber: true },
-      orderBy: { createdAt: "desc" },
+      include: { users: true, services: true, barbers: true },
+      orderBy: { createdat: "desc" },
     });
   } else {
     reservations = await prisma.reservations.findMany({
-      where: { userId: session.user.id },
-      include: { service: true, barber: true },
-      orderBy: { createdAt: "desc" },
+      where: { userid: session.user.id },
+      include: { services: true, barbers: true },
+      orderBy: { createdat: "desc" },
     });
   }
 
@@ -50,9 +50,10 @@ export async function POST(request: Request) {
 
     const newReservation = await prisma.reservations.create({
       data: {
-        userId: session.user.id,
-        serviceId,
-        barberId,
+        id: crypto.randomUUID(),
+        users: { connect: { id: session.user.id } },
+        services: { connect: { id: serviceId } },
+        barbers: { connect: { id: barberId } },
         date,
         time,
         price,
