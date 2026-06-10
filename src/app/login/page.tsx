@@ -32,7 +32,7 @@ export default function LoginPage() {
       const { getSession } = await import("next-auth/react");
       const session = await getSession();
 
-      if (session?.user?.needspasswordchange) {
+      if (session?.user?.needsPasswordChange) {
         router.push("/admin/change-password");
       } else if (session?.user?.role === "admin") {
         router.push("/admin/dashboard");

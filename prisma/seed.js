@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs')
 const prisma = new PrismaClient({})
 
 async function main() {
-  // Check if admin exists, if so update/recreate it with needspasswordchange: true and Admin123*
+  // Check if admin exists, if so update/recreate it with needsPasswordChange: true and Admin123*
   const adminEmail = 'admin@barberstudio.com'
   const hashedPassword = await bcrypt.hash('Admin123*', 10)
 
@@ -15,7 +15,7 @@ async function main() {
       password: hashedPassword,
       role: 'admin',
       phone: '1234567890',
-      needspasswordchange: true,
+      needsPasswordChange: true,
     },
     create: {
       name: 'Administrador Principal',
@@ -23,7 +23,7 @@ async function main() {
       password: hashedPassword,
       role: 'admin',
       phone: '1234567890',
-      needspasswordchange: true,
+      needsPasswordChange: true,
     }
   })
   console.log('Admin user seeded: admin@barberstudio.com / Admin123*')

@@ -27,7 +27,7 @@ export async function proxy(req: NextRequest) {
   }
 
   // If admin needs password change, force redirect to /admin/change-password (unless already there)
-  if (token && token.role === "admin" && token.needspasswordchange) {
+  if (token && token.role === "admin" && token.needsPasswordChange) {
     if (isAdminRoute && !pathname.startsWith("/admin/change-password")) {
       return NextResponse.redirect(new URL("/admin/change-password", req.url));
     }

@@ -54,7 +54,7 @@ export async function POST(request: Request) {
         phone,
         password: hashedPassword,
         role: "cliente",
-        needspasswordchange: false,
+        needsPasswordChange: false,
       },
     });
 

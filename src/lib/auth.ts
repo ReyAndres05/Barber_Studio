@@ -31,7 +31,7 @@ export const authOptions: NextAuthOptions = {
               password: defaultAdminPassword,
               role: "admin",
               phone: "1234567890",
-              needspasswordchange: true,
+              needsPasswordChange: true,
             },
           });
         }
@@ -58,7 +58,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          needspasswordchange: user.needspasswordchange,
+          needsPasswordChange: user.needsPasswordChange,
         };
       },
     }),
@@ -68,14 +68,14 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
-        token.needspasswordchange = user.needspasswordchange;
+        token.needsPasswordChange = user.needsPasswordChange;
       } else if (token?.id) {
         const dbUser = await prisma.users.findUnique({
           where: { id: token.id as string },
-          select: { needspasswordchange: true },
+          select: { needsPasswordChange: true },
         });
         if (dbUser) {
-          token.needspasswordchange = dbUser.needspasswordchange;
+          token.needsPasswordChange = dbUser.needsPasswordChange;
         }
       }
       return token;
@@ -84,7 +84,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
-        session.user.needspasswordchange = token.needspasswordchange as boolean;
+        session.user.needsPasswordChange = token.needsPasswordChange as boolean;
       }
       return session;
     },

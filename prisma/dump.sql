@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     address TEXT,
     role TEXT NOT NULL DEFAULT 'cliente',
     image TEXT,
-    needspasswordchange BOOLEAN NOT NULL DEFAULT false,
+    needsPasswordChange BOOLEAN NOT NULL DEFAULT false,
     createdAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
