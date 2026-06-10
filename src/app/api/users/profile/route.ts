@@ -19,7 +19,7 @@ export async function GET() {
           orderBy: { createdat: "desc" },
         },
         comments: {
-          orderBy: { createdat: "desc" },
+          orderBy: { createdAt: "desc" },
         },
       },
     });

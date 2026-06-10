@@ -21,7 +21,7 @@ export async function GET() {
     });
   } else {
     reservations = await prisma.reservations.findMany({
-      where: { userid: session.user.id },
+      where: { userId: session.user.id },
       include: { services: true, barbers: true },
       orderBy: { createdat: "desc" },
     });
