@@ -23,14 +23,16 @@ model barbers {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model comments {
-  id        String   @id  @default(uuid())
-  userid    String
+  id        String   @id @default(uuid())
+  userId    String
   comment   String
   rating    Int
-  createdat DateTime @default(now()) @db.Timestamptz(6) @map("createdat")
-  updatedat DateTime @default(now()) @db.Timestamptz(6) @map("updatedat")
-  users     users    @relation(fields: [userid], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("createdat")
+  updatedAt DateTime @default(now()) @map("updatedat")
+
+  user users @relation(fields: [userId], references: [id])
 }
+
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reservations {
