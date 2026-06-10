@@ -54,14 +54,14 @@ CREATE TABLE IF NOT EXISTS reservations (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,
     serviceId TEXT NOT NULL,
-    barberId TEXT NOT NULL,
+    barbersId TEXT NOT NULL,
     date DATE NOT NULL,
     time TIME NOT NULL,
     price REAL NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
     createdAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT reservations_barberId_fkey FOREIGN KEY (barberId) REFERENCES barbers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT reservations_barbersId_fkey FOREIGN KEY (barbersId) REFERENCES barbers(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT reservations_serviceId_fkey FOREIGN KEY (serviceId) REFERENCES services(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT reservations_userId_fkey FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
