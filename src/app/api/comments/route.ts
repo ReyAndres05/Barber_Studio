@@ -50,11 +50,12 @@ export async function POST(request: Request) {
 
     // Enviar correo asíncronamente
     sendCommentNotification(
-      newComment.users.name || "Cliente Anónimo",
-      newComment.users.email || "Sin correo",
+      newComment.user?.name || "Cliente Anónimo",
+      newComment.user?.email || "Sin correo",
       rating,
       comment
     ).catch((e) => console.error("Fallo al enviar correo", e));
+
 
     return NextResponse.json(newComment, { status: 201 });
   } catch (error) {
