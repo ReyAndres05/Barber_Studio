@@ -5,16 +5,29 @@ import { authOptions } from "@/lib/auth";
 import { sendCommentNotification } from "@/lib/mailer";
 
 export async function GET() {
-  const comments = await prisma.comments.findMany({
-    include: {
-      user: {
-        select: { name: true, image: true },
+  try {
+    const comments = await prisma.comments.findMany({
+      include: {
+        users: {
+          select: { name: true, image: true },
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
 
-  return NextResponse.json(comments);
+    const formattedComments = comments.map((c: any) => {
+      const { users, ...rest } = c;
+      return { ...rest, user: users };
+    });
+
+    return NextResponse.json(formattedComments);
+  } catch (error) {
+    console.error("Error in GET /api/comments:", error);
+    return NextResponse.json(
+      { error: "Error al obtener comentarios" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
@@ -38,27 +51,29 @@ export async function POST(request: Request) {
     const newComment = await prisma.comments.create({
       data: {
         id: crypto.randomUUID(),
-        user: { connect: { id: session.user.id } },
+        users: { connect: { id: session.user.id } },
         comment,
         rating,
       },
       include: {
-        user: {
+        users: {
           select: { name: true, email: true, image: true },
         },
       },
     });
 
+    const { users, ...rest } = newComment;
+    const formattedComment = { ...rest, user: users };
+
     // Enviar correo asíncronamente
     sendCommentNotification(
-      newComment.user?.name || "Cliente Anónimo",
-      newComment.user?.email || "Sin correo",
+      formattedComment.user?.name || "Cliente Anónimo",
+      formattedComment.user?.email || "Sin correo",
       rating,
       comment
     ).catch((e) => console.error("Fallo al enviar correo", e));
 
-
-    return NextResponse.json(newComment, { status: 201 });
+    return NextResponse.json(formattedComment, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

@@ -7,17 +7,17 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSession } from "next-auth/react";
 import { formatPrice } from "@/lib/utils";
-import { 
-  Scissors, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Star, 
-  Clock, 
-  CheckCircle, 
-  Sparkles, 
-  ShieldCheck, 
-  Send 
+import {
+  Scissors,
+  MapPin,
+  Phone,
+  Mail,
+  Star,
+  Clock,
+  CheckCircle,
+  Sparkles,
+  ShieldCheck,
+  Send
 } from "lucide-react";
 
 interface Service {
@@ -52,7 +52,7 @@ export default function Home() {
   const [services, setServices] = useState<Service[]>([]);
   const [barbers, setBarbers] = useState<Barber[]>([]);
   const [dbComments, setDbComments] = useState<DBComment[]>([]);
-  
+
   // Contact Form State
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,9 +72,19 @@ export default function Home() {
           fetch("/api/barbers"),
           fetch("/api/comments"),
         ]);
-        setServices(await sRes.json());
-        setBarbers(await bRes.json());
-        setDbComments(await cRes.json());
+
+        if (sRes.ok) {
+          const s = await sRes.json();
+          if (Array.isArray(s)) setServices(s);
+        }
+        if (bRes.ok) {
+          const b = await bRes.json();
+          if (Array.isArray(b)) setBarbers(b);
+        }
+        if (cRes.ok) {
+          const c = await cRes.json();
+          if (Array.isArray(c)) setDbComments(c);
+        }
       } catch (e) {
         console.error("Error fetching homepage data", e);
       }
@@ -127,7 +137,7 @@ export default function Home() {
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
-    
+
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
@@ -157,13 +167,13 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center justify-center pt-20 overflow-hidden">
         {/* Background Image Overlay */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center z-0 opacity-40 scale-105 transition-transform duration-1000"
           style={{ backgroundImage: `url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1920&q=80')` }}
         />
         {/* Dark Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-matte-black via-matte-black/75 to-transparent z-10" />
-        
+
         {/* Content */}
         <div className="relative z-20 max-w-5xl mx-auto px-4 text-center mt-8">
           <span className="inline-flex items-center space-x-2 bg-gold-500/10 border border-gold-500/30 text-gold-500 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-6 animate-pulse">
@@ -209,7 +219,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {services.map((service) => (
-              <div 
+              <div
                 key={service.id}
                 className="bg-charcoal border border-gray-800 rounded-xl p-6 flex flex-col justify-between hover:border-gold-500/30 transition-all duration-300 hover:shadow-2xl hover:shadow-gold-500/5 group"
               >
@@ -234,7 +244,7 @@ export default function Home() {
                     <Clock className="h-4 w-4 text-gold-500/70" />
                     <span>{service.duration} Minutos</span>
                   </span>
-                  <Link 
+                  <Link
                     href={`/reservar?service=${service.id}`}
                     className="text-gold-500 hover:underline flex items-center space-x-1"
                   >
@@ -255,8 +265,8 @@ export default function Home() {
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-gold-500 to-yellow-600 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200" />
               <div className="relative overflow-hidden rounded-xl aspect-[4/3] sm:aspect-[16/10] lg:aspect-square bg-charcoal">
-                <img 
-                  src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80" 
+                <img
+                  src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80"
                   alt="Ritual Barbería"
                   className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                 />
@@ -278,7 +288,7 @@ export default function Home() {
               <p className="text-gray-400 font-light leading-relaxed text-sm">
                 Nuestras instalaciones han sido rigurosamente diseñadas para sumergirte en una atmósfera de comodidad y exclusividad. Disfruta de una selección premium de cafés, whiskies de malta única, mientras nuestros artesanos del cabello trabajan con la máxima precisión.
               </p>
-              
+
               <div className="grid grid-cols-2 gap-6 pt-4">
                 <div className="flex items-start space-x-3">
                   <ShieldCheck className="h-6 w-6 text-gold-500 shrink-0 mt-0.5" />
@@ -315,13 +325,13 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {barbers.map((barber) => (
-              <div 
+              <div
                 key={barber.id}
                 className="bg-charcoal border border-gray-800 rounded-xl overflow-hidden group hover:border-gold-500/20 transition-all duration-300"
               >
                 <div className="relative aspect-[4/5] bg-matte-black overflow-hidden">
-                  <img 
-                    src={getBarberImage(barber.image)} 
+                  <img
+                    src={getBarberImage(barber.image)}
                     alt={barber.name}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
@@ -373,12 +383,12 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {galleryImages.map((img, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="relative overflow-hidden rounded-xl aspect-square group bg-charcoal border border-gray-800"
               >
-                <img 
-                  src={img.url} 
+                <img
+                  src={img.url}
                   alt={img.title}
                   className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />
@@ -469,7 +479,7 @@ export default function Home() {
             <div className="max-w-2xl mx-auto bg-charcoal border border-gray-800 rounded-2xl p-8">
               <h3 className="font-heading text-xl font-bold text-white mb-2">Deja tu Opinión</h3>
               <p className="text-gray-400 text-sm font-light mb-6">Comparte tu experiencia en Barber Studio, {session.user.name?.split(" ")[0]}.</p>
-              
+
               {commentSuccess && (
                 <div className="bg-green-500/10 border border-green-500/20 text-green-400 p-3 rounded-lg text-sm mb-4 flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4" />
@@ -528,7 +538,7 @@ export default function Home() {
       <section id="contacto" className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            
+
             {/* Contact Details */}
             <div className="space-y-8">
               <div>
@@ -548,7 +558,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="text-white font-semibold text-sm uppercase">Nuestra Dirección</h4>
-                    <p className="text-gray-400 text-sm mt-1">Av. del Lujo 777, Barber District, Ciudad Alta</p>
+                    <p className="text-gray-400 text-sm mt-1">Cra 19, #54-57, Barrancabermeja</p>
                   </div>
                 </div>
 
@@ -575,8 +585,8 @@ export default function Home() {
 
               {/* Map Simulator */}
               <div className="relative rounded-xl overflow-hidden border border-gray-800 aspect-[2/1] bg-charcoal group">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 opacity-70 group-hover:scale-105 group-hover:opacity-85 transition-all duration-700" 
+                <div
+                  className="absolute inset-0 bg-cover bg-center filter grayscale contrast-125 opacity-70 group-hover:scale-105 group-hover:opacity-85 transition-all duration-700"
                   style={{ backgroundImage: `url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80')` }}
                 />
                 <div className="absolute inset-0 bg-black/40 z-10" />
@@ -602,7 +612,7 @@ export default function Home() {
                   <label htmlFor="contact-name" className="text-xs uppercase text-gray-400 font-semibold tracking-wider block">
                     Nombre Completo
                   </label>
-                  <input 
+                  <input
                     type="text"
                     id="contact-name"
                     required
@@ -617,7 +627,7 @@ export default function Home() {
                   <label htmlFor="contact-email" className="text-xs uppercase text-gray-400 font-semibold tracking-wider block">
                     Correo Electrónico
                   </label>
-                  <input 
+                  <input
                     type="email"
                     id="contact-email"
                     required
@@ -632,7 +642,7 @@ export default function Home() {
                   <label htmlFor="contact-message" className="text-xs uppercase text-gray-400 font-semibold tracking-wider block">
                     Mensaje
                   </label>
-                  <textarea 
+                  <textarea
                     id="contact-message"
                     required
                     rows={4}

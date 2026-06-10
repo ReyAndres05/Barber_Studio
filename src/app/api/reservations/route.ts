@@ -15,15 +15,32 @@ export async function GET() {
   let reservations;
 
   if (role === "admin") {
-    reservations = await prisma.reservations.findMany({
+    const rawReservations = await prisma.reservations.findMany({
       include: { users: true, services: true, barbers: true },
       orderBy: { createdat: "desc" },
     });
+    reservations = rawReservations.map((r: any) => {
+      const { users, services, barbers, ...rest } = r;
+      return {
+        ...rest,
+        user: users,
+        service: services,
+        barber: barbers,
+      };
+    });
   } else {
-    reservations = await prisma.reservations.findMany({
+    const rawReservations = await prisma.reservations.findMany({
       where: { userId: session.user.id },
       include: { services: true, barbers: true },
       orderBy: { createdat: "desc" },
+    });
+    reservations = rawReservations.map((r: any) => {
+      const { services, barbers, ...rest } = r;
+      return {
+        ...rest,
+        service: services,
+        barber: barbers,
+      };
     });
   }
 

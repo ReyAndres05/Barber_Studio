@@ -24,15 +24,13 @@ model barbers {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model comments {
   id        String   @id @default(uuid())
-  userId    String
+  userid    String
   comment   String
   rating    Int
-  createdAt DateTime @default(now()) @map("createdat")
-  updatedAt DateTime @default(now()) @map("updatedat")
-
-  user users @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("createdat") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updatedat") @db.Timestamptz(6)
+  users     users    @relation(fields: [userid], references: [id], onDelete: Cascade)
 }
-
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model reservations {
@@ -64,18 +62,17 @@ model services {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model users {
-  id                  String   @id @default(uuid())
+  id                  String         @id @default(uuid())
   name                String?
-  email               String?  @unique
+  email               String?        @unique
   password            String?
   phone               String?
   address             String?
-  role                String   @default("cliente")
+  role                String         @default("cliente")
   image               String?
-  needsPasswordChange Boolean  @default(false) @map("needsPasswordChange")
-  createdAt           DateTime @default(now()) @map("createdat")
-  updatedAt           DateTime @default(now()) @map("updatedat")
-
-  comments     comments[]
-  reservations reservations[]
+  needspasswordchange Boolean        @default(false)
+  createdAt           DateTime       @default(now()) @map("createdat") @db.Timestamptz(6)
+  updatedAt           DateTime       @default(now()) @map("updatedat") @db.Timestamptz(6)
+  comments            comments[]
+  reservations        reservations[]
 }

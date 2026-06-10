@@ -28,8 +28,21 @@ export async function GET() {
       return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
     }
 
+    const formattedReservations = user.reservations.map((res: any) => {
+      const { services, barbers, ...rest } = res;
+      return {
+        ...rest,
+        service: services,
+        barber: barbers,
+      };
+    });
+
     const { password, ...userWithoutPassword } = user;
-    return NextResponse.json(userWithoutPassword);
+    const finalUser = {
+      ...userWithoutPassword,
+      reservations: formattedReservations,
+    };
+    return NextResponse.json(finalUser);
   } catch (error) {
     console.error(error);
     return NextResponse.json(

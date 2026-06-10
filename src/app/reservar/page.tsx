@@ -80,10 +80,16 @@ function BookingWizardContent() {
           fetch("/api/services"),
           fetch("/api/barbers")
         ]);
-        const s = await servicesRes.json();
-        const b = await barbersRes.json();
-        setServices(s);
-        setBarbers(b);
+        
+        if (servicesRes.ok) {
+          const s = await servicesRes.json();
+          if (Array.isArray(s)) setServices(s);
+        }
+        
+        if (barbersRes.ok) {
+          const b = await barbersRes.json();
+          if (Array.isArray(b)) setBarbers(b);
+        }
       } catch (error) {
         console.error("Error fetching data", error);
       } finally {

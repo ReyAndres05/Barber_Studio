@@ -70,8 +70,15 @@ export default function AdminDashboard() {
         fetch("/api/reservations"),
         fetch("/api/comments"),
       ]);
-      setReservations(await resR.json());
-      setComments(await comR.json());
+      
+      if (resR.ok) {
+        const resData = await resR.json();
+        if (Array.isArray(resData)) setReservations(resData);
+      }
+      if (comR.ok) {
+        const comData = await comR.json();
+        if (Array.isArray(comData)) setComments(comData);
+      }
     } catch (e) {
       console.error(e);
     } finally {
