@@ -7,7 +7,7 @@ import { sendCommentNotification } from "@/lib/mailer";
 export async function GET() {
   const comments = await prisma.comments.findMany({
     include: {
-      users: {
+      user: {
         select: { name: true, image: true },
       },
     },
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         rating,
       },
       include: {
-        users: {
+        user: {
           select: { name: true, email: true, image: true },
         },
       },
