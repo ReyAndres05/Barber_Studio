@@ -46,7 +46,8 @@ export async function POST(request: Request) {
         password: hashedPassword,
         needspasswordchange: false,
       },
-    });
+});
+
 
     return NextResponse.json(
       { message: "Contraseña cambiada exitosamente. Ya puedes continuar." },
