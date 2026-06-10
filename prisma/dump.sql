@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Tabla de barberos
-CREATE TABLE IF NOT EXISTS barbers (
+CREATE TABLE IF NOT EXISTS barber (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     role TEXT NOT NULL,
@@ -54,20 +54,20 @@ CREATE TABLE IF NOT EXISTS reservations (
     id TEXT PRIMARY KEY,
     userId TEXT NOT NULL,
     serviceId TEXT NOT NULL,
-    barbersId TEXT NOT NULL,
+    barberId TEXT NOT NULL,
     date DATE NOT NULL,
     time TIME NOT NULL,
     price REAL NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
     createdAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT reservations_barbersId_fkey FOREIGN KEY (barbersId) REFERENCES barbers(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT reservations_barberId_fkey FOREIGN KEY (barberId) REFERENCES barber(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT reservations_serviceId_fkey FOREIGN KEY (serviceId) REFERENCES services(id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT reservations_userId_fkey FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Inserts de barberos
-INSERT INTO barbers VALUES 
+INSERT INTO barber VALUES 
 ('cmq64u8wl0006va8cpe213nv2','Alexander Pierce','Master Barber & Fundador',4.9,142,'Con más de 12 años perfeccionando el arte de la barbería tradicional en Londres y Nueva York.','alexander-pierce','active','1,2,3,4,5,6'),
 ('cmq64u8wm0007va8cyg23hipg','Mateo Silva','Especialista en Estilo Urbano',4.8,98,'Un artista en el degradado (fade) y las texturas modernas. Mateo siempre está al día con las últimas tendencias de street style urbano y cortes creativos estructurados.','mateo-silva','active','1,2,3,4,5'),
 ('cmq64u8wm0008va8ca8shv005','Marcus Vance','Grooming & Beard Expert',4.9,115,'Marcus trata la barba como una escultura. Su precisión matemática en el delineado y sus amplios conocimientos en cuidado de la piel masculina garantizan una barba perfecta y saludable.','marcus-vance','active','2,3,4,5,6');
@@ -82,7 +82,7 @@ INSERT INTO services VALUES
 
 -- Inserts de usuarios
 INSERT INTO users VALUES
-('cmq64u8w10000va8cxg9v1kly','Administrador Principal','admin@barberstudio.com','$2b$10$6B3l8gILIHrfRXfoNxgIK.focIW52RuDBroBbdvgMRzYrz/m0ZlXq','1234567890',NULL,'admin',NULL,false,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
+('cmq64u8w10000va8cxg9v1kly','Administrador Principal','admin@barbertudio.com','$2b$10$6B3l8gILIHrfRXfoNxgIK.focIW52RuDBroBbdvgMRzYrz/m0ZlXq','1234567890',NULL,'admin',NULL,false,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP),
 ('cmq6a2ve50000vabszi700civ','Elvis Peña','penaelvis@gmail.com','$2b$10$ksE.VV7oXYc.x7apSkuXPu.VEznzfwxebXkfRDMMXH2jXegjUbX1y','3101234567',NULL,'cliente',NULL,false,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP);
 
 -- Insert de reserva
